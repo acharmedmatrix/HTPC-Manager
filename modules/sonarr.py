@@ -28,7 +28,9 @@ class Sonarr(object):
                 {'type': 'text', 'label': 'API', 'name': 'sonarr_apikey'},
                 {'type': 'bool', 'label': 'Use SSL', 'name': 'sonarr_ssl'},
                 {'type': 'text', 'label': 'Reverse proxy link', 'placeholder': '', 'desc': 'Reverse proxy link, e.g. https://sonarr.domain.com', 'name': 'sonarr_reverse_proxy_link'},
-
+				{'type': 'bool', 'label': 'Calendar default to week', 'name': 'sonarr_calendar_week'},
+				{'type': 'bool', 'label': 'Calendar week starts on Sunday', 'name': 'sonarr_calendar_start'},
+				{'type': 'bool', 'label': 'Show Calendar dates as M/D', 'name': 'sonarr_calendar_md'}
             ]
         })
 
@@ -147,6 +149,16 @@ class Sonarr(object):
     @cherrypy.tools.json_out()
     def oldCalendar(self, param=None):
         return self.fetch('Calendar?end=%s' % (DT.date.today() + DT.timedelta(days=7)))
+
+    @cherrypy.expose()
+    @require()
+    @cherrypy.tools.json_out()
+    def GetSettings(self, param=None):
+	d = {}
+	d['week'] = htpc.settings.get('sonarr_calendar_week')
+	d['start'] = htpc.settings.get('sonarr_calendar_start')
+	d['md'] = htpc.settings.get('sonarr_calendar_md')
+	return d
 
     @cherrypy.expose()
     @require()
