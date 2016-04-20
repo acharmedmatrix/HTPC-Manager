@@ -64,6 +64,18 @@
 .dashboard .span4 #downloads_table_body td:last-child {
     width: 14px;
 }
+.dashboard .span4 #activedownloads_table_body td:first-child {
+    width: 380px;
+}
+.dashboard .span4 #activedownloads_table_body td:nth-child(2) {
+   text-align:right;
+}
+.dashboard .span4 #activedownloads_table_body td:nth-child(3) {
+   text-align:right;
+}
+.dashboard .span4 #activedownloads_table_body td:last-child {
+   text-align:right;
+}
 .dashboard .span4 #nzbgetdownloads_table_body td:last-child {
     width: 14px;
 }
