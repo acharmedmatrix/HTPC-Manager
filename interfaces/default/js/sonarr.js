@@ -461,7 +461,7 @@ $.ajax({
 			  element.text(title)
 			var time = new Date();
 
-			  if (Date.parse(event.all.airDateUtc) < time) {
+			  			  if (Date.parse(event.all.airDateUtc) < time) {
 						  if(event.all.hasFile){
 						element.addClass('calendar_has_file');
 					  } else {
@@ -473,6 +473,7 @@ $.ajax({
 						  }
 					  }
 			  }
+					  else
 			  {
 				  element.addClass('calendar_unaired');
 			  }
