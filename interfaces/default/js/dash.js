@@ -1,42 +1,82 @@
 var row_n = 0
 
 function dash_sonarr_calendar() {
-
   if (!$('#dash_sonarr_calendar').length) return
-  $('#dash_sonarr_cal').fullCalendar({
-    editable: false,
-    handleWindowResize: true,
-    weekends: true,
-    allDayDefault: false,
-    defaultView: 'basicDay',
-    header: {
-      left: 'prev,next today',
-      center: 'title',
-      right: 'month, basicWeek, basicDay'
-    },
-    firstDay: '1',
-    columnFormat: 'ddd D/M',
-    displayEventTime: true,
-    timeFormat: 'hh:mm',
-    timezone: 'local',
-    height: 'auto',
+		$.ajax({
+        url: WEBDIR + 'sonarr/GetSettings',
+		type: 'get',
+        dataType: 'json' ,
+        success: function(response) {
+				   if (response.week == true) {
+					var calview = 'basicWeek';
+				   }
+				   else{
+					   var calview = 'basicDay';
+				   }
+				   if (response.start == true) {
+					var calstart = '0';
+				   }
+				   else{
+					   var calstart = '1';
+				   }
+				   if (response.md == true) {
+					var dateformat = 'M/D';
+				   }
+				   else{
+					   var dateformat = 'D/M';
+				   }
+				   if (response.start == true) {
+					var calstart = '0';
+				   }
+				   else{
+					   var calstart = '1';
+				   }
+			$('#dash_sonarr_cal').fullCalendar({
+			editable: false,
+			handleWindowResize: true,
+			weekends: true,
+			allDayDefault: false,
+			defaultView: calview,
+			header: {
+			  left: 'prev,next today',
+			  center: 'title',
+			  right: 'month, basicWeek, basicDay'
+			},
+			firstDay: calstart,
+			columnFormat: 'ddd ' + dateformat,
+			displayEventTime: true,
+			timeFormat: 'hh:mm',
+			timezone: 'local',
+			height: 'auto',
 
-    events: {
-      url: WEBDIR + 'sonarr/Calendar',
-      type: 'GET',
-    },
-    eventRender: function(event, element) {
-      var title = event.title + ' S' + pad(event.all.seasonNumber, 2) + 'E' + pad(event.all.episodeNumber, 2) + ' ' + event.all.title
-      element.text(title)
-      if (event.all.hasFile) {
-        element.addClass('calendar_has_file');
-      } else {
-        element.addClass('calendar_missing_file');
-      }
-      // add modal here?
-    }
+			events: {
+			  url: WEBDIR + 'sonarr/Calendar',
+			  type: 'GET',
+			},
+			eventRender: function(event, element) {
+			  var title = event.title + ' S' + pad(event.all.seasonNumber, 2) + 'E' + pad(event.all.episodeNumber, 2) + ' ' + event.all.title
+			  element.text(title)
+			var time = new Date();
 
-  });
+			  			  if (Date.parse(event.all.airDateUtc) < time) {
+						  if(event.all.hasFile){
+						element.addClass('calendar_has_file');
+					  } else {
+						  if (Date.parse(event.all.airDateUtc) + ((event.all.runtime)*60000) > time){
+							  element.addClass('calendar_airing_now');
+						  }
+						  else{
+						element.addClass('calendar_missing_file');
+						  }
+					  }
+			  }
+			  // add modal here?
+			}
+
+					});
+	}
+	});		
+
   $('#dash_sonarr_cal').fullCalendar('render')
 }
 
@@ -403,6 +443,62 @@ function loadDownloadHistory() {
       )
     })
   })
+}
+
+function loadActiveDownloads() {
+  function ActiveDownloadsLoop(){
+  if (!$('#activedownloads_table_body').length) return
+  $('#activedownloads_table_body').empty()
+  $.getJSON(WEBDIR + 'sabnzbd/GetStatus', function(data) {
+	  if(data.queue.status == 'Idle'){
+		  $('#dash_sabnzbd2').children('h3:first-child').empty().append(('<a href="sabnzbd/#active">Queue&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>' + 'Idle&nbsp;'))
+	  }
+	  if(data.queue.status == 'Paused'){
+		  $('#dash_sabnzbd2').children('h3:first-child').empty().append(('<a href="sabnzbd/#active">Queue&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>' + 'Paused:&nbsp;' + '<button onclick="nzb_resume_button()" class="btn" id="nzb_play_button"><i class="fa fa-play"></i></button>'))
+	  }
+	  	  if(data.queue.status == 'Downloading'){
+		  $('#dash_sabnzbd2').children('h3:first-child').empty().append(('<a href="sabnzbd/#active">Queue&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Speed:&nbsp;</a>' + data.queue.speed + 'B/Sec' + '<button onclick="nzb_pause_button()" class="btn" id="nzb_pause_button"><i class="fa fa-pause"></i></button>'))
+	  }
+		  $.each(data.queue.slots, function(i, slot) {
+		  $('#activedownloads_table_body').append(
+		  $('<tr>').append(
+			  $('<td>').html(slot.filename).attr('title', slot.filename),
+			  $('<td>').html(slot.sizeleft).attr('title', slot.sizeleft),
+			  $('<td>').html(slot.timeleft).attr('title', slot.timeleft),
+			  $('<td>').html('<button onclick="nzb_delete_button(\''+slot.nzo_id+'\')" class="btn" id="nzb_delete_button"><i class="fa fa-minus"></i></button>')
+		)
+  )})
+  })
+  }
+  ActiveDownloadsLoop();
+  setInterval(ActiveDownloadsLoop,1000);
+}
+function nzb_pause_button(){
+	var clickItem = $(this);
+        clickItem.button('loading');
+$.ajax({
+            url: WEBDIR + 'sabnzbd/TogglePause?mode=pause',
+            dataType: 'json',
+            type: 'get'
+        });
+}
+function nzb_resume_button(){
+	var clickItem = $(this);
+        clickItem.button('loading');
+$.ajax({
+            url: WEBDIR + 'sabnzbd/TogglePause?mode=resume',
+            dataType: 'json',
+            type: 'get'
+        });
+}
+function nzb_delete_button(id){
+if (confirm('Are you sure?')) {
+        $.ajax({
+            url: WEBDIR + 'sabnzbd/DeleteNzb?id=' + id,
+            type: 'get',
+            dataType: 'json',
+});
+}
 }
 
 function loadNZBGetDownloadHistory() {
