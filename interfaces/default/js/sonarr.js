@@ -410,51 +410,79 @@ function loadShow(seriesID) {
 }
 
 function cal() {
-  $('#cal').fullCalendar({
-    editable: false,
-    handleWindowResize: true,
-    weekends: true,
-    allDayDefault: false,
-    defaultView: 'basicWeek',
-    header: {
-      left: 'prev,next today',
-      center: 'title',
-      right: 'month,agendaWeek,agendaDay'
-    },
-    firstDay: '1',
-    columnFormat: 'ddd D/M',
-    displayEventTime: true,
-    timeFormat: 'hh:mm',
-    timezone: 'local',
-    height: 'auto',
+	
+$.ajax({
+        url: WEBDIR + 'sonarr/GetSettings',
+		type: 'get',
+        dataType: 'json' ,
+        success: function(response) {
+				   if (response.week == true) {
+					var calview = 'basicWeek';
+				   }
+				   else{
+					   var calview = 'basicDay';
+				   }
+				   if (response.start == true) {
+					var calstart = '0';
+				   }
+				   else{
+					   var calstart = '1';
+				   }
+				   if (response.md == true) {
+					var dateformat = 'M/D';
+				   }
+				   else{
+					   var dateformat = 'D/M';
+				   }
+			$('#cal').fullCalendar({
+			editable: false,
+			handleWindowResize: true,
+			weekends: true,
+			allDayDefault: false,
+			defaultView: calview,
+			header: {
+			  left: 'prev,next today',
+			  center: 'title',
+			  right: 'month, basicWeek, basicDay'
+			},
+			firstDay: calstart,
+			columnFormat: 'ddd ' + dateformat,
+			displayEventTime: true,
+			timeFormat: 'hh:mm',
+			timezone: 'local',
+			height: 'auto',
 
-    events: {
-      url: 'Calendar',
-      type: 'GET',
-    },
-    eventRender: function(event, element, view) {
-      if (event.all.hasFile) {
-        element.addClass('calendar_has_file');
-      } else {
-        element.addClass('calendar_missing_file');
-      }
+			events: {
+			  url: WEBDIR + 'sonarr/Calendar',
+			  type: 'GET',
+			},
+			eventRender: function(event, element) {
+			  var title = event.title + ' S' + pad(event.all.seasonNumber, 2) + 'E' + pad(event.all.episodeNumber, 2) + ' ' + event.all.title
+			  element.text(title)
+			var time = new Date();
 
-      element.click(function(e) {
-        if (event.all.hasFile) {
-          //calendarmodal TODO
-        } else {
-          loadShow(event.all.series.id)
-        }
-      });
+			  if (Date.parse(event.all.airDateUtc) < time) {
+						  if(event.all.hasFile){
+						element.addClass('calendar_has_file');
+					  } else {
+						  if (Date.parse(event.all.airDateUtc) + ((event.all.runtime)*60000) > time){
+							  element.addClass('calendar_airing_now');
+						  }
+						  else{
+						element.addClass('calendar_missing_file');
+						  }
+					  }
+			  }
+			  {
+				  element.addClass('calendar_unaired');
+			  }
+			  // add modal here?
+			}
 
-    }
-
-  });
+					});
+	}
+	});		
   $('#cal').fullCalendar('render')
-}
-
-function calendarmodal(s) {
-  // TODO
 }
 
 function Scanfolder() {
