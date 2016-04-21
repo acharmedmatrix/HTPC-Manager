@@ -62,10 +62,14 @@
     overflow: hidden;
 }
 .dashboard .span4 #currentplex_table_body td:first-child {
-    width: 150px;
+    width: 110px;
 }
 .dashboard .span4 #currentplex_table_body td:last-child {
     width: 50px;
+}
+.dashboard .span4 #currentplex_table_body td:nth-child(3) {
+    width: 100px;
+	text-align:right;
 }
 .dashboard .span4 #downloads_table_body td:last-child {
     width: 14px;
