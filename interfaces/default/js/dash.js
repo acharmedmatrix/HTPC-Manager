@@ -433,7 +433,6 @@ function loadRecentAlbumsPlex() {
 function loadCurrentPlex(){
 	  function CurrentPlexLoop(){
   if (!$('#currentplex_table_body').length) return
-  $('#currentplex_table_body').empty()
 $.getJSON(WEBDIR + 'plex/NowPlaying', function(data) {
 	if (data.playing_items.length == 0) {
         $('#currentplex_table_body').hide();
@@ -445,6 +444,7 @@ $.getJSON(WEBDIR + 'plex/NowPlaying', function(data) {
 		$('#dash_current_plex').children('h3:first-child').empty().append(('<a href="plex">Currently Playing in Plex</a>'));
         $('#currentplex_table_body').empty()
 	}
+	$('#currentplex_table_body').empty()
 	 $.each(data.playing_items, function(i, slot) {
 		 if ((slot.type) == 'movie'){
 		  PlayingTitle = slot.title;
@@ -466,7 +466,7 @@ $.getJSON(WEBDIR + 'plex/NowPlaying', function(data) {
   )})
   }
   CurrentPlexLoop();
-  setInterval(CurrentPlexLoop,10000);
+  setInterval(CurrentPlexLoop,5000);
 }
 function loadCurrentPlexCarousel() {
 	function CurrentPlexCarouselLoop(){
@@ -545,7 +545,6 @@ function loadDownloadHistory() {
 function loadActiveDownloads() {
   function ActiveDownloadsLoop(){
   if (!$('#activedownloads_table_body').length) return
-  $('#activedownloads_table_body').empty()
   $.getJSON(WEBDIR + 'sabnzbd/GetStatus', function(data) {
 	  if(data.queue.status == 'Idle'){
 		  $('#dash_sabnzbd2').children('h3:first-child').empty().append(('<a href="sabnzbd/#active">Queue&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>' + 'Idle&nbsp;'))
@@ -556,6 +555,7 @@ function loadActiveDownloads() {
 	  	  if(data.queue.status == 'Downloading'){
 		  $('#dash_sabnzbd2').children('h3:first-child').empty().append(('<a href="sabnzbd/#active">Queue&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Speed:&nbsp;</a>' + data.queue.speed + 'B/Sec' + '<button onclick="nzb_pause_button()" class="btn" id="nzb_pause_button"><i class="fa fa-pause"></i></button>'))
 	  }
+		  $('#activedownloads_table_body').empty()
 		  $.each(data.queue.slots, function(i, slot) {
 		  $('#activedownloads_table_body').append(
 		  $('<tr>').append(
