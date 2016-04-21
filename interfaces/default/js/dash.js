@@ -435,28 +435,94 @@ function loadCurrentPlex(){
   if (!$('#currentplex_table_body').length) return
   $('#currentplex_table_body').empty()
 $.getJSON(WEBDIR + 'plex/NowPlaying', function(data) {
+	if (data.playing_items.length == 0) {
+        $('#currentplex_table_body').hide();
+		$('#dash_current_plex').children('h3:first-child').empty().append(('<a href="plex">Nothing Currently Playing in Plex</a>'));
+        return;
+	}
+	else{
+		$('#currentplex_table_body').show();
+		$('#dash_current_plex').children('h3:first-child').empty().append(('<a href="plex">Currently Playing in Plex</a>'));
+        $('#currentplex_table_body').empty()
+	}
 	 $.each(data.playing_items, function(i, slot) {
 		 if ((slot.type) == 'movie'){
+		  PlayingTitle = slot.title;
+		 }
+		 else{
+			 PlayingTitle = slot.show + ' - S' + slot.season + 'E' + slot.episode + ' - ' + slot.title;
+		 }
+		 watchedprogess = parseSec(slot.viewOffset/1000);
+		 totallength = parseSec(slot.duration/1000);
 		  $('#currentplex_table_body').append(
-		  $('<tr>').append(
+			$('<tr>').append(
 			  $('<td>').html(slot.user).attr('title', slot.user),
-			  $('<td>').html(slot.title).attr('title', slot.title),
+			  $('<td>').html(PlayingTitle).attr('title', 'Title'),
+			  $('<td>').html(watchedprogess + '/' + totallength),
 			  $('<td>').html(slot.state).attr('title', slot.state)	
 		)
-	 )}
-	 else{
-		  $('#currentplex_table_body').append(
-		  $('<tr>').append(
-			  $('<td>').html(slot.user).attr('title', slot.user),
-			  $('<td>').html(slot.show + ' - S' + slot.season + 'E' + slot.episode + ' - ' + slot.title).attr('title', slot.show),
-			  $('<td>').html(slot.state).attr('title', slot.state)		  
-		)
-	 )}
+	 )
 	 }
   )})
   }
   CurrentPlexLoop();
-  setInterval(CurrentPlexLoopLoop,10000);
+  setInterval(CurrentPlexLoop,10000);
+}
+function loadCurrentPlexCarousel() {
+	function CurrentPlexCarouselLoop(){
+  if (!$('#nowplaying-carousel-plex').length) return
+  $.getJSON(WEBDIR + 'plex/NowPlaying', function(data) {
+    if (data.playing_items.length == 0) {
+        $('#nowplaying-carousel-plex').hide();
+		$('#dash_current_plex_carousel').children('h3:first-child').empty().append(('<a href="plex">Nothing Currently Playing in Plex</a>'));
+        return;
+	}
+	else{
+		$('#nowplaying-carousel-plex').show();
+		$('#dash_current_plex_carousel').children('h3:first-child').empty().append(('<a href="plex">Currently Playing in Plex</a>'));
+        $('#nowplaying-carousel-plex .carousel-inner').empty()
+	}
+	$.each(data.playing_items, function(i, slot) {
+      var itemDiv = $('<div>').addClass('item carousel-item')
+
+      if (i == 0) itemDiv.addClass('active')
+
+      var src = WEBDIR + "plex/GetThumb?h=240&w=430&thumb=" + encodeURIComponent(slot.thumbnail)
+      itemDiv.attr('style', 'background-image: url("' + src + '")')
+	  if (typeof slot.address == 'undefined')
+	  {
+		  viewaddress = 'localhost';
+	  }
+	  else{
+		  viewaddress = slot.address;
+	  }
+	  watchedprogess = parseSec(slot.viewOffset/1000);
+	  totallength = parseSec(slot.duration/1000);
+	  if ((slot.type) == 'movie'){
+		  PlayingTitle = slot.user + ' - ' + slot.title + ' - ' + slot.state + ' - '  + watchedprogess + '/' + totallength;
+		  plexlink = '#movies';
+	  }
+	  else{
+			 PlayingTitle = slot.user + ' - ' + slot.show + ' - S' + slot.season + 'E' + slot.episode + ' - ' + slot.title + ' - ' + slot.state + ' - '  + watchedprogess + '/' + totallength;
+			 plexlink = '#shows';
+	  	 }
+      itemDiv.append($('<div>').addClass('carousel-caption').click(function() {
+        location.href = 'plex/' + plexlink
+      }).hover(function() {
+        var text = $(this).children('p').stop().slideToggle()
+      }).append(
+        $('<h4>').html(PlayingTitle),
+        $('<p>').html(
+          '<b>Player</b>: ' + slot.player + '<br />' + 'Address: ' + viewaddress
+        ).hide()
+      ))
+      $('#nowplaying-carousel-plex .carousel-inner').append(itemDiv)
+    })
+    $('#nowplaying-carousel-plex').show()
+  })
+	}
+	CurrentPlexCarouselLoop();
+	setInterval(CurrentPlexCarouselLoop,10000);
 }
 function loadDownloadHistory() {
   if (!$('#downloads_table_body').length) return
