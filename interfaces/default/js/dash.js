@@ -456,10 +456,10 @@ $.getJSON(WEBDIR + 'plex/NowPlaying', function(data) {
 		 totallength = parseSec(slot.duration/1000);
 		  $('#currentplex_table_body').append(
 			$('<tr>').append(
-			  $('<td>').html(slot.user).attr('title', slot.user),
-			  $('<td>').html(PlayingTitle).attr('title', 'Title'),
-			  $('<td>').html(watchedprogess + '/' + totallength),
-			  $('<td>').html(slot.state).attr('title', slot.state)	
+			  $('<td width="20%">').html(slot.user).attr('title', slot.user),
+			  $('<td width="45%">').html(PlayingTitle).attr('title', 'Title'),
+			  $('<td width="25%" style=text-align:right>').html(watchedprogess + '/' + totallength),
+			  $('<td width="10%">').html(slot.state).attr('title', slot.state)	
 		)
 	 )
 	 }
@@ -574,10 +574,10 @@ function loadActiveDownloads() {
 		  $.each(data.queue.slots, function(i, slot) {
 		  $('#activedownloads_table_body').append(
 		  $('<tr>').append(
-			  $('<td>').html(slot.filename).attr('title', slot.filename),
-			  $('<td>').html(slot.sizeleft).attr('title', slot.sizeleft),
-			  $('<td>').html(slot.timeleft).attr('title', slot.timeleft),
-			  $('<td>').html('<button onclick="nzb_delete_button(\''+slot.nzo_id+'\')" class="btn" id="nzb_delete_button"><i class="fa fa-minus"></i></button>')
+			  $('<td width="70%">').html(slot.filename).attr('title', slot.filename),
+			  $('<td width="15%" style=text-align:right>').html(slot.sizeleft).attr('title', slot.sizeleft),
+			  $('<td width="15%" style=text-align:right>').html(slot.timeleft).attr('title', slot.timeleft),
+			  $('<td width="25">').html('<button onclick="nzb_delete_button(\''+slot.nzo_id+'\')" class="btn" id="nzb_delete_button"><i class="fa fa-minus"></i></button>')
 		)
   )})
   })
