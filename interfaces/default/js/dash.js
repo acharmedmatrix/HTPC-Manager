@@ -522,7 +522,7 @@ function loadCurrentPlexCarousel() {
   })
 	}
 	CurrentPlexCarouselLoop();
-	setInterval(CurrentPlexCarouselLoop,10000);
+	setInterval(CurrentPlexCarouselLoop,5000);
 }
 function loadDownloadHistory() {
   if (!$('#downloads_table_body').length) return
