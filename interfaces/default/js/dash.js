@@ -430,7 +430,34 @@ function loadRecentAlbumsPlex() {
     $('#albums-content-plex').parent().show()
   })
 }
-
+function loadCurrentPlex(){
+	  function CurrentPlexLoop(){
+  if (!$('#currentplex_table_body').length) return
+  $('#currentplex_table_body').empty()
+$.getJSON(WEBDIR + 'plex/NowPlaying', function(data) {
+	 $.each(data.playing_items, function(i, slot) {
+		 if ((slot.type) == 'movie'){
+		  $('#currentplex_table_body').append(
+		  $('<tr>').append(
+			  $('<td>').html(slot.user).attr('title', slot.user),
+			  $('<td>').html(slot.title).attr('title', slot.title),
+			  $('<td>').html(slot.state).attr('title', slot.state)	
+		)
+	 )}
+	 else{
+		  $('#currentplex_table_body').append(
+		  $('<tr>').append(
+			  $('<td>').html(slot.user).attr('title', slot.user),
+			  $('<td>').html(slot.show + ' - S' + slot.season + 'E' + slot.episode + ' - ' + slot.title).attr('title', slot.show),
+			  $('<td>').html(slot.state).attr('title', slot.state)		  
+		)
+	 )}
+	 }
+  )})
+  }
+  CurrentPlexLoop();
+  setInterval(CurrentPlexLoopLoop,10000);
+}
 function loadDownloadHistory() {
   if (!$('#downloads_table_body').length) return
   $.getJSON(WEBDIR + 'sabnzbd/GetHistory?limit=5', function(data) {
