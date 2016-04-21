@@ -547,13 +547,28 @@ function loadActiveDownloads() {
   if (!$('#activedownloads_table_body').length) return
   $.getJSON(WEBDIR + 'sabnzbd/GetStatus', function(data) {
 	  if(data.queue.status == 'Idle'){
-		  $('#dash_sabnzbd2').children('h3:first-child').empty().append(('<a href="sabnzbd/#active">Queue&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>' + 'Idle&nbsp;'))
+	  $('#dash_sabnzbd2').children('h3:first-child').empty().append(
+	  $('<h3>').append(
+	  $('<div class="h3-activesab">').append(
+		$('<div class="span4">').html('<a href="sabnzbd/#active">SABnzbd Queue</a>'),
+		$('<div class="span8 text-right">').html('Idle')
+	  )))
 	  }
 	  if(data.queue.status == 'Paused'){
-		  $('#dash_sabnzbd2').children('h3:first-child').empty().append(('<a href="sabnzbd/#active">Queue&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a>' + 'Paused:&nbsp;' + '<button onclick="nzb_resume_button()" class="btn" id="nzb_play_button"><i class="fa fa-play"></i></button>'))
+	  $('#dash_sabnzbd2').children('h3:first-child').empty().append(
+	  $('<h3>').append(
+	  $('<div class="h3-activesab">').append(
+		$('<div class="span4">').html('<a href="sabnzbd/#active">SABnzbd Queue</a>'),
+		$('<div class="span8 text-right">').html('Paused ' + '<button onclick="nzb_resume_button()" class="btn" id="nzb_play_button"><i class="fa fa-play"></i></button>')
+	  )))
 	  }
-	  	  if(data.queue.status == 'Downloading'){
-		  $('#dash_sabnzbd2').children('h3:first-child').empty().append(('<a href="sabnzbd/#active">Queue&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Speed:&nbsp;</a>' + data.queue.speed + 'B/Sec' + '<button onclick="nzb_pause_button()" class="btn" id="nzb_pause_button"><i class="fa fa-pause"></i></button>'))
+	  if(data.queue.status == 'Downloading'){
+	  $('#dash_sabnzbd2').children('h3:first-child').empty().append(
+	  $('<h3>').append(
+	  $('<div class="h3-activesab">').append(
+	  $('<div class="span4">').html('<a href="sabnzbd/#active">SABnzbd Queue</a>'),
+	  $('<div class="span8 text-right">').html('Speed:&nbsp;' + data.queue.speed + 'B/Sec' + '<button onclick="nzb_pause_button()" class="btn" id="nzb_pause_button"><i class="fa fa-pause"></i></button>') 
+	  )))
 	  }
 		  $('#activedownloads_table_body').empty()
 		  $.each(data.queue.slots, function(i, slot) {
