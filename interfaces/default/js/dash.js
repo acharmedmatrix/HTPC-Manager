@@ -53,27 +53,29 @@ function dash_sonarr_calendar() {
 			  url: WEBDIR + 'sonarr/Calendar',
 			  type: 'GET',
 			},
-			eventRender: function(event, element) {
+						eventRender: function(event, element) {
 			  var title = event.title + ' S' + pad(event.all.seasonNumber, 2) + 'E' + pad(event.all.episodeNumber, 2) + ' ' + event.all.title
 			  element.text(title)
 			var time = new Date();
-
-			  if (Date.parse(event.all.airDateUtc) < time) {
+			var airtime = Date.parse(event.all.airDateUtc);
+			var runtime = (((Math.ceil(parseInt(event.all.series.runtime)/30) * 30) + 10)*60000);
+			var endtime = airtime + runtime;
+			  if (airtime < time) {
 						  if(event.all.hasFile){
-						element.addClass('calendar_has_file');
-					  } else {
-						  if (Date.parse(event.all.airDateUtc) + ((event.all.runtime)*60000) > time){
-							  element.addClass('calendar_airing_now');
-						  }
+								element.addClass('calendar_has_file');
+							} 
 						  else{
-						element.addClass('calendar_missing_file');
+							if(endtime > time){
+							  element.addClass('calendar_airing_now');
+							}
+							else{
+								element.addClass('calendar_missing_file');
+						    }
 						  }
 					  }
-			  }
-					  else
-			  {
-				  element.addClass('calendar_unaired');
-			  }
+			   else{
+					   element.addClass('calendar_unaired');
+				   }	
 			  // add modal here?
 			}
 
