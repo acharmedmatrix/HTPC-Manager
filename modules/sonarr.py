@@ -153,7 +153,9 @@ class Sonarr(object):
     @cherrypy.expose()
     @require()
     @cherrypy.tools.json_out()
-    def GetSettings(self, param=None):
+    @staticmethod
+    def GetSettings(self):
+    	 ''' Poll settings for module '''
 	d = {}
 	d['week'] = htpc.settings.get('sonarr_calendar_week')
 	d['start'] = htpc.settings.get('sonarr_calendar_start')
